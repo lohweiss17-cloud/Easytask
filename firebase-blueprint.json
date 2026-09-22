@@ -1,0 +1,83 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Usuário autenticado no EasyTask via Firebase Authentication",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "UID do usuário no Firebase Authentication"
+        },
+        "email": {
+          "type": "string",
+          "description": "Endereço de e-mail do usuário"
+        },
+        "nome": {
+          "type": "string",
+          "description": "Nome de exibição do usuário"
+        },
+        "fotoUrl": {
+          "type": "string",
+          "description": "URL da foto de perfil do usuário"
+        }
+      },
+      "required": ["id"]
+    },
+    "Tarefa": {
+      "title": "Tarefa",
+      "description": "Documento de tarefa pessoal armazenado no Firestore com isolamento por usuário",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "UID do usuário proprietário da tarefa (Firebase Auth UID)",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "titulo": {
+          "type": "string",
+          "description": "Título da tarefa",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "descricao": {
+          "type": "string",
+          "description": "Descrição detalhada opcional da tarefa",
+          "maxLength": 1000
+        },
+        "prioridade": {
+          "type": "string",
+          "description": "Nível de prioridade da tarefa",
+          "enum": ["baixa", "media", "alta"]
+        },
+        "categoria": {
+          "type": "string",
+          "description": "Categoria opcional da tarefa",
+          "maxLength": 50
+        },
+        "dataLimite": {
+          "type": "string",
+          "description": "Data limite opcional no formato YYYY-MM-DD",
+          "maxLength": 20
+        },
+        "status": {
+          "type": "string",
+          "description": "Status de conclusão da tarefa",
+          "enum": ["pendente", "concluida"]
+        },
+        "criadoEm": {
+          "type": "number",
+          "description": "Timestamp de criação em milissegundos"
+        }
+      },
+      "required": ["userId", "titulo", "prioridade", "status", "criadoEm"]
+    }
+  },
+  "firestore": {
+    "/tarefas/{tarefaId}": {
+      "schema": "Tarefa",
+      "description": "Coleção de tarefas pessoais do aplicativo EasyTask com isolamento estrito por usuário"
+    }
+  }
+}

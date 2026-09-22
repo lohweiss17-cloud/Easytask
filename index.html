@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tarefas Pessoais</title>
+    <meta name="description" content="Aplicação web simples para gerenciamento e cadastro de tarefas pessoais com níveis de prioridade." />
+    <meta property="og:title" content="Tarefas Pessoais" />
+    <meta property="og:description" content="Aplicação web simples para gerenciamento e cadastro de tarefas pessoais com níveis de prioridade." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      // Suprime avisos benignos de desconexão de WebSocket/HMR no iframe do AI Studio
+      window.addEventListener('unhandledrejection', function (event) {
+        var reason = event && event.reason;
+        var msg = (reason && (reason.message || String(reason))) || '';
+        if (msg.includes('WebSocket') || msg.includes('vite')) {
+          event.preventDefault();
+        }
+      });
+    </script>
+  </head>
+  <body class="bg-stone-950 text-stone-100 antialiased min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

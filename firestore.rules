@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuth() && request.auth.uid == userId;
+    }
+
+    function isValidTarefa(data) {
+      let requiredKeys = ['userId', 'titulo', 'prioridade', 'status', 'criadoEm'];
+      let allowedKeys = ['userId', 'titulo', 'prioridade', 'status', 'criadoEm', 'descricao', 'categoria', 'dataLimite'];
+      
+      return data.keys().hasAll(requiredKeys) &&
+        data.keys().toSet().hasOnly(allowedKeys.toSet()) &&
+        data.userId is string &&
+        data.userId.size() >= 1 &&
+        data.userId.size() <= 128 &&
+        data.titulo is string &&
+        data.titulo.size() >= 1 &&
+        data.titulo.size() <= 120 &&
+        data.prioridade in ['baixa', 'media', 'alta'] &&
+        data.status in ['pendente', 'concluida'] &&
+        (data.criadoEm is number || data.criadoEm is timestamp) &&
+        (!('descricao' in data) || (data.descricao is string && data.descricao.size() <= 1000)) &&
+        (!('categoria' in data) || (data.categoria is string && data.categoria.size() <= 50)) &&
+        (!('dataLimite' in data) || (data.dataLimite is string && data.dataLimite.size() <= 20));
+    }
+
+    match /tarefas/{tarefaId} {
+      // 1. Leitura: usuário autenticado só pode ler suas próprias tarefas
+      allow read: if isOwner(resource.data.userId);
+
+      // 2. Criação: usuário autenticado só pode criar tarefas para si mesmo com dados válidos
+      allow create: if isOwner(request.resource.data.userId) &&
+                      isValidTarefa(request.resource.data);
+
+      // 3. Atualização: apenas o dono pode atualizar, sem trocar proprietário ou data de criação
+      allow update: if isOwner(resource.data.userId) &&
+                      request.resource.data.userId == resource.data.userId &&
+                      request.resource.data.criadoEm == resource.data.criadoEm &&
+                      isValidTarefa(request.resource.data);
+
+      // 4. Exclusão: apenas o dono pode excluir sua própria tarefa
+      allow delete: if isOwner(resource.data.userId);
+    }
+  }
+}

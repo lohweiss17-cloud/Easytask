@@ -1,0 +1,6 @@
+{
+  "name": "Tarefas Pessoais",
+  "description": "Aplicação web simples para gerenciamento e cadastro de tarefas pessoais com níveis de prioridade.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
